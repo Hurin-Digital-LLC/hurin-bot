@@ -1,4 +1,12 @@
 {
   "name": "ask",
-  "description": "Ask Hurin a question"
+  "description": "Ask Hurin a question",
+  "options": [
+    {
+      "name": "query",
+      "description": "The query being asked",
+      "type": 3,
+      "required": true
+    }
+  ]
 }
