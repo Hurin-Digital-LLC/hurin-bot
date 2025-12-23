@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: Grok Bot
+  ai:
+    openai:
+      api-key: ${GROK_API_KEY}
+      base-url: https://api.x.ai/v1
+      chat:
+        options:
+          model: grok-4
+
+discord:
+  token: ${DISCORD_BOT_TOKEN}
+  application-id: 1450895430672974088
+  guild-id: 1449251991158132770
