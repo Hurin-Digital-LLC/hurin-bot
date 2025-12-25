@@ -1,6 +1,7 @@
-package com.hurindigital.springgrokbot.config;
+package com.hurindigital.springgrokbot.discord;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hurindigital.springgrokbot.config.DiscordProperties;
 import discord4j.common.JacksonResources;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.RestClient;

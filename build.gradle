@@ -43,6 +43,7 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory'
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation "com.discord4j:discord4j-core:3.3.0"
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 
     compileOnly 'org.projectlombok:lombok'
 
@@ -54,6 +55,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'io.r2dbc:r2dbc-h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 }

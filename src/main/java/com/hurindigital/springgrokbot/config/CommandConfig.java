@@ -1,8 +1,9 @@
 package com.hurindigital.springgrokbot.config;
 
-import com.hurindigital.springgrokbot.command.openai.AskCommand;
-import com.hurindigital.springgrokbot.command.openai.HelloCommand;
+import com.hurindigital.springgrokbot.discord.function.ask.AskCommand;
+import com.hurindigital.springgrokbot.discord.function.HelloCommand;
 import com.hurindigital.springgrokbot.service.ChatService;
+import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +24,8 @@ public class CommandConfig {
     }
 
     @Bean
-    AskCommand askCommand() {
-        return new AskCommand(chatService);
+    AskCommand askCommand(ThreadTrackerService threadTrackerService) {
+        return new AskCommand(chatService, threadTrackerService);
     }
 
 }

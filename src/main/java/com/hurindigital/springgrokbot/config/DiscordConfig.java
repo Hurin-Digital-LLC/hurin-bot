@@ -1,16 +1,24 @@
 package com.hurindigital.springgrokbot.config;
 
-import com.hurindigital.springgrokbot.command.Command;
-import com.hurindigital.springgrokbot.command.CommandDispatcher;
+import com.hurindigital.springgrokbot.discord.EventHandler;
+import com.hurindigital.springgrokbot.discord.EventHandlerRegistrar;
+import com.hurindigital.springgrokbot.discord.function.Command;
+import com.hurindigital.springgrokbot.discord.function.CommandHandler;
+import com.hurindigital.springgrokbot.discord.GlobalCommandRegistrar;
+import com.hurindigital.springgrokbot.repo.ThreadRepository;
+import com.hurindigital.springgrokbot.service.DiscordThreadTrackerService;
+import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.EventDispatcher;
+import discord4j.core.event.domain.Event;
 import discord4j.rest.RestClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Configuration
 public class DiscordConfig {
@@ -50,8 +58,18 @@ public class DiscordConfig {
     }
 
     @Bean
-    CommandDispatcher commandDispatcher(Collection<Command> commands, GatewayDiscordClient gatewayDiscordClient) {
-        return new CommandDispatcher(commands, gatewayDiscordClient);
+    CommandHandler commandDispatcher(Collection<Command> commands) {
+        return new CommandHandler(commands);
+    }
+
+    @Bean
+    EventHandlerRegistrar eventHandlerRegistrar(GatewayDiscordClient gatewayDiscordClient, Set<EventHandler<? extends Event>> handlers) {
+        return new EventHandlerRegistrar(gatewayDiscordClient, handlers);
+    }
+
+    @Bean
+    ThreadTrackerService threadTrackerService(ThreadRepository threadRepository) {
+        return new DiscordThreadTrackerService(threadRepository);
     }
 
 }

@@ -1,6 +1,5 @@
-package com.hurindigital.springgrokbot.command.openai;
+package com.hurindigital.springgrokbot.discord.function;
 
-import com.hurindigital.springgrokbot.command.Command;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Member;
 import reactor.core.publisher.Mono;
