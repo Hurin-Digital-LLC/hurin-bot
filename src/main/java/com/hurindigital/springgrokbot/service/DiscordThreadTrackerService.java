@@ -22,4 +22,9 @@ public class DiscordThreadTrackerService implements ThreadTrackerService {
     public Mono<ThreadEntity> find(long id) {
         return threadRepository.findByThreadId(id);
     }
+
+    @Override
+    public Mono<Boolean> exists(long id) {
+        return threadRepository.existsByThreadId(id);
+    }
 }

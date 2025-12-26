@@ -1,11 +1,23 @@
 package com.hurindigital.springgrokbot.service;
 
+import org.springframework.ai.chat.memory.ChatMemory;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ChatService {
 
-    Mono<String> ask(String query);
+    default ResponseSpec ask(String query) {
+        return ask(query, ChatMemory.DEFAULT_CONVERSATION_ID);
+    }
 
-    Mono<String> ask(String query, Object conversationId);
+    ResponseSpec ask(String query, Object conversationId);
+
+    interface ResponseSpec {
+
+        Flux<String> immediate();
+
+        Mono<String> complete();
+
+    }
 
 }

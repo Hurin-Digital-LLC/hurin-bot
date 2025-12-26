@@ -9,4 +9,6 @@ public interface ThreadTrackerService {
 
     Mono<ThreadEntity> find(long id);
 
+    Mono<Boolean> exists(long id);
+
 }

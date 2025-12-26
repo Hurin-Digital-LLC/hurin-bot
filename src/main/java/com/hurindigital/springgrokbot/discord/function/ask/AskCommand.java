@@ -4,12 +4,21 @@ import com.hurindigital.springgrokbot.discord.function.Command;
 import com.hurindigital.springgrokbot.domain.ThreadEntity;
 import com.hurindigital.springgrokbot.service.ChatService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
+import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.ThreadChannel;
 import discord4j.core.spec.StartThreadFromMessageSpec;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j
 public class AskCommand implements Command {
@@ -35,19 +44,40 @@ public class AskCommand implements Command {
         final String query = getQuery(event);
         return event.deferReply()
                 .then(event.createFollowup("Let's continue this conversation in the thread below."))
-                .flatMap(followUp -> followUp.startThread(StartThreadFromMessageSpec.builder()
-                                .name(query)
-                        .build()))
-//                .flatMap(threadChannel -> threadTrackerService.track(ThreadEntity.from(threadChannel))
-//                        .thenReturn(threadChannel))
-                .flatMap(threadChannel -> chatService.ask(query, threadChannel.getId().asString())
-                        .flatMap(threadChannel::createMessage))
-                .onErrorResume(error -> {
-                    log.error("Error while asking for a thread", error);
-                    return event.createFollowup("Failed to create thread: " + error.getMessage())
-                            .withEphemeral(true);
-                })
+                .flatMap(startThread(query))
+                .flatMap(sendResponse(query))
+                .thenReturn(event)
+                .onErrorResume(sendErrorReply(event))
                 .then();
+    }
+
+    private Function<Message, Mono<ThreadChannel>> startThread(String name) {
+        return message -> message.startThread(StartThreadFromMessageSpec.builder()
+                        .name(name)
+                .build())
+                .flatMap(trackThread());
+    }
+
+    private Function<ThreadChannel, Mono<ThreadChannel>> trackThread() {
+        return thread -> threadTrackerService.track(ThreadEntity.from(thread))
+                .thenReturn(thread);
+    }
+
+    private Function<ThreadChannel, Mono<ThreadChannel>> sendResponse(String query) {
+        return thread -> thread.type()
+                .then(Mono.defer(() -> chatService.ask(query, thread.getId().asString())
+                        .complete()
+                        .flatMap(response -> thread.createMessage(response)
+                                .thenReturn(thread))));
+    }
+
+    private Function<Throwable, Mono<ChatInputInteractionEvent>> sendErrorReply(ChatInputInteractionEvent event) {
+        return error -> {
+            log.error("Error while asking for a thread", error);
+            return event.createFollowup("Failed to create thread: " + error.getMessage())
+                    .withEphemeral(true)
+                    .thenReturn(event);
+        };
     }
 
     private String getQuery(ChatInputInteractionEvent event) {

@@ -1,17 +1,16 @@
 package com.hurindigital.springgrokbot.config;
 
 import com.hurindigital.springgrokbot.discord.EventHandler;
-import com.hurindigital.springgrokbot.discord.EventHandlerRegistrar;
 import com.hurindigital.springgrokbot.discord.function.Command;
 import com.hurindigital.springgrokbot.discord.function.CommandHandler;
-import com.hurindigital.springgrokbot.discord.GlobalCommandRegistrar;
+import com.hurindigital.springgrokbot.discord.function.ask.AskCommand;
 import com.hurindigital.springgrokbot.discord.function.ask.AskReplyHandler;
 import com.hurindigital.springgrokbot.repo.ThreadRepository;
+import com.hurindigital.springgrokbot.discord.BotRunner;
+import com.hurindigital.springgrokbot.service.ChatService;
 import com.hurindigital.springgrokbot.service.DiscordThreadTrackerService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.core.DiscordClient;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.EventDispatcher;
 import discord4j.core.event.domain.Event;
 import discord4j.rest.RestClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -36,26 +35,13 @@ public class DiscordConfig {
     }
 
     @Bean
-    EventDispatcher discordEventDispatcher() {
-        return EventDispatcher.builder().build();
+    BotRunner botRunner(DiscordProperties discordProperties, DiscordClient discordClient, Set<EventHandler<? extends Event>> handlers) {
+        return new BotRunner(discordProperties, discordClient, handlers);
     }
 
     @Bean
-    GatewayDiscordClient gatewayDiscordClient(DiscordClient discordClient, EventDispatcher discordEventDispatcher) {
-        return discordClient.gateway()
-                .setEventDispatcher(discordEventDispatcher)
-                .login()
-                .block();
-    }
-
-    @Bean
-    RestClient discordRestClient(GatewayDiscordClient gatewayDiscordClient) {
-        return gatewayDiscordClient.getRestClient();
-    }
-
-    @Bean
-    GlobalCommandRegistrar commandRegistrar(RestClient discordRestClient, DiscordProperties discordProperties) {
-        return new GlobalCommandRegistrar(discordRestClient, discordProperties);
+    AskReplyHandler askReplyHandler(ThreadTrackerService threadTrackerService, ChatService chatService) {
+        return new AskReplyHandler(threadTrackerService, chatService);
     }
 
     @Bean
@@ -64,18 +50,13 @@ public class DiscordConfig {
     }
 
     @Bean
-    EventHandlerRegistrar eventHandlerRegistrar(GatewayDiscordClient gatewayDiscordClient, Set<EventHandler<? extends Event>> handlers) {
-        return new EventHandlerRegistrar(gatewayDiscordClient, handlers);
-    }
-
-    @Bean
     ThreadTrackerService threadTrackerService(ThreadRepository threadRepository) {
         return new DiscordThreadTrackerService(threadRepository);
     }
 
     @Bean
-    AskReplyHandler askReplyHandler(ThreadTrackerService threadTrackerService) {
-        return new AskReplyHandler(threadTrackerService);
+    AskCommand askCommand(ChatService chatService, ThreadTrackerService threadTrackerService) {
+        return new AskCommand(chatService, threadTrackerService);
     }
 
 }

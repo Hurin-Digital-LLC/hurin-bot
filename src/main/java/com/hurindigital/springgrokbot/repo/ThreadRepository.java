@@ -10,4 +10,6 @@ public interface ThreadRepository extends R2dbcRepository<ThreadEntity, Long> {
 
     Mono<ThreadEntity> findByThreadId(long threadId);
 
+    Mono<Boolean> existsByThreadId(long threadId);
+
 }
