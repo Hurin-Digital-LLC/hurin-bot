@@ -1,12 +1,12 @@
 package com.hurindigital.springgrokbot.service;
 
-import com.hurindigital.springgrokbot.domain.Thread;
+import com.hurindigital.springgrokbot.domain.ThreadEntity;
 import reactor.core.publisher.Mono;
 
 public interface ThreadTrackerService {
 
-    Mono<Thread> track(Thread thread);
+    Mono<ThreadEntity> track(ThreadEntity thread);
 
-    Mono<Thread> find(long id);
+    Mono<ThreadEntity> find(long id);
 
 }

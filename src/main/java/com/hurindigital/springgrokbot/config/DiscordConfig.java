@@ -5,6 +5,7 @@ import com.hurindigital.springgrokbot.discord.EventHandlerRegistrar;
 import com.hurindigital.springgrokbot.discord.function.Command;
 import com.hurindigital.springgrokbot.discord.function.CommandHandler;
 import com.hurindigital.springgrokbot.discord.GlobalCommandRegistrar;
+import com.hurindigital.springgrokbot.discord.function.ask.AskReplyHandler;
 import com.hurindigital.springgrokbot.repo.ThreadRepository;
 import com.hurindigital.springgrokbot.service.DiscordThreadTrackerService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
@@ -70,6 +71,11 @@ public class DiscordConfig {
     @Bean
     ThreadTrackerService threadTrackerService(ThreadRepository threadRepository) {
         return new DiscordThreadTrackerService(threadRepository);
+    }
+
+    @Bean
+    AskReplyHandler askReplyHandler(ThreadTrackerService threadTrackerService) {
+        return new AskReplyHandler(threadTrackerService);
     }
 
 }

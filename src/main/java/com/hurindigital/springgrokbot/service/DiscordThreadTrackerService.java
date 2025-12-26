@@ -1,6 +1,6 @@
 package com.hurindigital.springgrokbot.service;
 
-import com.hurindigital.springgrokbot.domain.Thread;
+import com.hurindigital.springgrokbot.domain.ThreadEntity;
 import com.hurindigital.springgrokbot.repo.ThreadRepository;
 import reactor.core.publisher.Mono;
 
@@ -13,13 +13,13 @@ public class DiscordThreadTrackerService implements ThreadTrackerService {
     }
 
     @Override
-    public Mono<Thread> track(Thread thread) {
+    public Mono<ThreadEntity> track(ThreadEntity thread) {
         return threadRepository.findByThreadId(thread.getThreadId())
                 .switchIfEmpty(Mono.defer(() -> threadRepository.save(thread)));
     }
 
     @Override
-    public Mono<Thread> find(long id) {
+    public Mono<ThreadEntity> find(long id) {
         return threadRepository.findByThreadId(id);
     }
 }

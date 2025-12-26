@@ -1,18 +1,15 @@
 package com.hurindigital.springgrokbot.discord.function.ask;
 
 import com.hurindigital.springgrokbot.discord.function.Command;
-import com.hurindigital.springgrokbot.domain.Thread;
+import com.hurindigital.springgrokbot.domain.ThreadEntity;
 import com.hurindigital.springgrokbot.service.ChatService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
-import discord4j.core.object.entity.channel.ThreadChannel;
 import discord4j.core.spec.StartThreadFromMessageSpec;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
-import java.util.function.Function;
 
 @Slf4j
 public class AskCommand implements Command {
@@ -41,12 +38,15 @@ public class AskCommand implements Command {
                 .flatMap(followUp -> followUp.startThread(StartThreadFromMessageSpec.builder()
                                 .name(query)
                         .build()))
-                .flatMap(threadChannel -> threadTrackerService.track(Thread.from(threadChannel))
-                        .thenReturn(threadChannel))
+//                .flatMap(threadChannel -> threadTrackerService.track(ThreadEntity.from(threadChannel))
+//                        .thenReturn(threadChannel))
                 .flatMap(threadChannel -> chatService.ask(query, threadChannel.getId().asString())
                         .flatMap(threadChannel::createMessage))
-                .onErrorResume(error -> event.createFollowup("Failed to create thread: " + error.getMessage())
-                        .withEphemeral(true))
+                .onErrorResume(error -> {
+                    log.error("Error while asking for a thread", error);
+                    return event.createFollowup("Failed to create thread: " + error.getMessage())
+                            .withEphemeral(true);
+                })
                 .then();
     }
 

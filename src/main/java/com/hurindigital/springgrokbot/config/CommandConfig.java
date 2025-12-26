@@ -19,7 +19,7 @@ public class CommandConfig {
     }
 
     @Bean
-    HelloCommand testCommand() {
+    HelloCommand helloCommand() {
         return new HelloCommand();
     }
 
