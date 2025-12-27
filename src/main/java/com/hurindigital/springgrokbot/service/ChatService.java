@@ -12,11 +12,19 @@ public interface ChatService {
 
     ResponseSpec ask(String query, Object conversationId);
 
+    void appendChat(String conversationId, String message);
+
     interface ResponseSpec {
 
+        /**
+         * @return a Flux immediately regardless if data is still being published.
+         */
         Flux<String> immediate();
 
-        Mono<String> complete();
+        /**
+         * @return a complete response in appropriately sized chunks.
+         */
+        Flux<String> complete();
 
     }
 

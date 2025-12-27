@@ -1,16 +1,26 @@
 package com.hurindigital.springgrokbot.service;
 
+import com.hurindigital.springgrokbot.discord.Chunker;
+import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.UserMessage;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
+@Slf4j
 public class OpenAIChatService implements ChatService {
 
     private final ChatClient chatClient;
 
-    public OpenAIChatService(ChatClient chatClient) {
+    private final ChatMemory chatMemory;
+
+    public OpenAIChatService(ChatClient chatClient, ChatMemory chatMemory) {
         this.chatClient = chatClient;
+        this.chatMemory = chatMemory;
     }
 
     @Override
@@ -26,12 +36,20 @@ public class OpenAIChatService implements ChatService {
             }
 
             @Override
-            public Mono<String> complete() {
+            public Flux<String> complete() {
                 return immediate()
-                        .reduce("", String::concat);
+                        .reduce("", String::concat)
+                        .as(Chunker::chunk);
             }
-
         };
+    }
+
+    @Override
+    public void appendChat(String conversationId, String message) {
+        log.info("Appending message '{}' to conversation {}", message, conversationId);
+        chatMemory.add(conversationId, UserMessage.builder()
+                        .text(message)
+                .build());
     }
 
 }

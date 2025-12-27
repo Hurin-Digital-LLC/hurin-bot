@@ -65,10 +65,12 @@ public class AskCommand implements Command {
 
     private Function<ThreadChannel, Mono<ThreadChannel>> sendResponse(String query) {
         return thread -> thread.type()
-                .then(Mono.defer(() -> chatService.ask(query, thread.getId().asString())
+                .then(chatService.ask(query, thread.getId().asString())
                         .complete()
-                        .flatMap(response -> thread.createMessage(response)
-                                .thenReturn(thread))));
+                        .delayElements(Duration.ofMillis(600))
+                        .flatMap(thread::createMessage, 1)
+                        .then(Mono.just(thread))
+                );
     }
 
     private Function<Throwable, Mono<ChatInputInteractionEvent>> sendErrorReply(ChatInputInteractionEvent event) {

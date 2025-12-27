@@ -25,8 +25,8 @@ public class ChatConfig {
     }
 
     @Bean
-    ChatService chatService(ChatClient chatClient) {
-        return new OpenAIChatService(chatClient);
+    ChatService chatService(ChatClient chatClient, ChatMemory chatMemory) {
+        return new OpenAIChatService(chatClient, chatMemory);
     }
 
 }
