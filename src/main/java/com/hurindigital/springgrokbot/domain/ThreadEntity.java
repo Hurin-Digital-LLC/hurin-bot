@@ -1,15 +1,15 @@
 package com.hurindigital.springgrokbot.domain;
 
-import discord4j.core.object.entity.channel.ThreadChannel;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Table("thread")
 public class ThreadEntity implements Thread {
 
@@ -18,9 +18,16 @@ public class ThreadEntity implements Thread {
 
     private final long threadId;
 
-    public static ThreadEntity from(ThreadChannel channel) {
+    private final Instant created;
+
+    private final Instant closed;
+
+    public static ThreadEntity from(Thread thread) {
         return builder()
-                .threadId(channel.getId().asLong())
+                .id(thread.getId())
+                .threadId(thread.getThreadId())
+                .created(thread.getCreated())
+                .closed(thread.getClosed())
                 .build();
     }
 

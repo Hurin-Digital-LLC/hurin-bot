@@ -1,6 +1,7 @@
 package com.hurindigital.springgrokbot.config;
 
 import com.hurindigital.springgrokbot.discord.EventHandler;
+import com.hurindigital.springgrokbot.discord.ThreadAutoCloser;
 import com.hurindigital.springgrokbot.discord.function.Command;
 import com.hurindigital.springgrokbot.discord.function.CommandHandler;
 import com.hurindigital.springgrokbot.discord.function.ask.AskCommand;
@@ -13,6 +14,7 @@ import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.Event;
 import discord4j.rest.RestClient;
+import jakarta.annotation.PreDestroy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,11 @@ public class DiscordConfig {
         return new BotRunner(discordProperties, discordClient, handlers);
     }
 
+    @Bean(destroyMethod = "shutdown")
+    ThreadAutoCloser threadAutoCloser(DiscordProperties properties, DiscordClient discordClient, ThreadTrackerService threadTrackerService) {
+        return new ThreadAutoCloser(properties, discordClient, threadTrackerService);
+    }
+
     @Bean
     AskReplyHandler askReplyHandler(ThreadTrackerService threadTrackerService, ChatService chatService) {
         return new AskReplyHandler(threadTrackerService, chatService);
@@ -57,6 +64,11 @@ public class DiscordConfig {
     @Bean
     AskCommand askCommand(ChatService chatService, ThreadTrackerService threadTrackerService) {
         return new AskCommand(chatService, threadTrackerService);
+    }
+
+    @PreDestroy
+    public void shutdown() {
+
     }
 
 }

@@ -1,0 +1,3 @@
+discord:
+  thread-auto-close-duration: PT30M
+  thread-auto-close-interval: PT5M

@@ -41,7 +41,7 @@ public class BotRunner implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         discordClient.gateway()
                 .setEnabledIntents(IntentSet.nonPrivileged().or(IntentSet.of(Intent.MESSAGE_CONTENT)))
                 .setEventDispatcher(EventDispatcher.builder().build())

@@ -13,3 +13,5 @@ discord:
   token: ${DISCORD_BOT_TOKEN}
   application-id: 1450895430672974088
   guild-id: 1449251991158132770
+  thread-auto-close-duration: PT30M
+  thread-auto-close-interval: PT5M

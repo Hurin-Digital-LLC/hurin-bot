@@ -59,7 +59,7 @@ public class AskCommand implements Command {
     }
 
     private Function<ThreadChannel, Mono<ThreadChannel>> trackThread() {
-        return thread -> threadTrackerService.track(ThreadEntity.from(thread))
+        return thread -> threadTrackerService.track(thread.getId().asLong())
                 .thenReturn(thread);
     }
 
