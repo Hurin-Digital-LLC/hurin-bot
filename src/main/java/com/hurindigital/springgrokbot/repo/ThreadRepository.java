@@ -13,6 +13,4 @@ public interface ThreadRepository extends R2dbcRepository<ThreadEntity, Long> {
 
     Mono<Boolean> existsByThreadId(long threadId);
 
-    Flux<ThreadEntity> findAllByClosedIsNull();
-
 }

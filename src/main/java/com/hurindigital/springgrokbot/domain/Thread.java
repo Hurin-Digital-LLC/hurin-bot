@@ -11,6 +11,4 @@ public interface Thread {
 
     Instant getCreated();
 
-    Instant getClosed();
-
 }

@@ -94,8 +94,7 @@ public class ThreadAutoCloser implements ApplicationRunner {
 
     private Mono<Void> closeThread(Thread thread) {
         log.info("ThreadAutoCloser closing thread {}", thread.getId());
-        return threadTrackerService.close(thread)
-                .then();
+        return threadTrackerService.close(thread);
     }
 
     private long getCheckInterval() {

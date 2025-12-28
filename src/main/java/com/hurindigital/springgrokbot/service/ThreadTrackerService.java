@@ -9,7 +9,7 @@ public interface ThreadTrackerService {
 
     Mono<? extends Thread> track(long threadId);
 
-    Mono<? extends Thread> close(Thread thread);
+    Mono<Void> close(Thread thread);
 
     Mono<ThreadEntity> find(long id);
 

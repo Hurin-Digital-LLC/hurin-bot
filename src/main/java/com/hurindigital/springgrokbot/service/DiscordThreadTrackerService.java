@@ -26,11 +26,8 @@ public class DiscordThreadTrackerService implements ThreadTrackerService {
     }
 
     @Override
-    public Mono<? extends Thread> close(Thread thread) {
-        return threadRepository.save(ThreadEntity.from(thread)
-                .toBuilder()
-                .closed(Instant.now())
-                .build());
+    public Mono<Void> close(Thread thread) {
+        return threadRepository.delete(ThreadEntity.from(thread));
     }
 
     @Override
@@ -45,7 +42,7 @@ public class DiscordThreadTrackerService implements ThreadTrackerService {
 
     @Override
     public Flux<? extends Thread> findAllActiveThreads() {
-        return threadRepository.findAllByClosedIsNull();
+        return threadRepository.findAll();
     }
 
 }

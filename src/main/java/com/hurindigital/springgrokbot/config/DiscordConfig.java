@@ -61,9 +61,9 @@ public class DiscordConfig {
         return new AskCommand(chatService, threadTrackerService);
     }
 
-    @Bean
-    AskHurinCommand askHurinCommand(ThreadTrackerService threadTrackerService, ChatService chatService) {
-        return new AskHurinCommand(threadTrackerService, chatService);
-    }
+//    @Bean
+//    AskHurinCommand askHurinCommand(ThreadTrackerService threadTrackerService, ChatService chatService) {
+//        return new AskHurinCommand(threadTrackerService, chatService);
+//    }
 
 }
