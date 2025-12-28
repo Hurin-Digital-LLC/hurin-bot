@@ -6,12 +6,9 @@ import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.ThreadChannel;
 import discord4j.core.spec.ThreadChannelEditSpec;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import reactor.core.publisher.Mono;
@@ -66,6 +63,7 @@ public class ThreadAutoCloser implements ApplicationRunner {
                             .ofType(ThreadChannel.class)
                             .filterWhen(isInactive(client))
                             .flatMap(archiveThread())
+                            .then(closeThread(thread))
                             .onErrorResume(error -> {
                                 log.error("Failed to process thread {}: {}", thread.getThreadId(), error.getMessage());
                                 return Mono.empty();
@@ -91,6 +89,12 @@ public class ThreadAutoCloser implements ApplicationRunner {
                                 .locked(true)
                         .build()))
                 .doOnSuccess(thread1 -> log.info("Auto-archived thread: {}", thread1.getId().asString()))
+                .then();
+    }
+
+    private Mono<Void> closeThread(Thread thread) {
+        log.info("ThreadAutoCloser closing thread {}", thread.getId());
+        return threadTrackerService.close(thread)
                 .then();
     }
 

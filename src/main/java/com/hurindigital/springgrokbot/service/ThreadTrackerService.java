@@ -5,8 +5,6 @@ import com.hurindigital.springgrokbot.domain.ThreadEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-
 public interface ThreadTrackerService {
 
     Mono<? extends Thread> track(long threadId);

@@ -2,14 +2,15 @@ package com.hurindigital.springgrokbot.service;
 
 import com.hurindigital.springgrokbot.discord.Chunker;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
+import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.content.Media;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 @Slf4j
 public class OpenAIChatService implements ChatService {
@@ -24,12 +25,17 @@ public class OpenAIChatService implements ChatService {
     }
 
     @Override
-    public ResponseSpec ask(String query, Object conversationId) {
+    public ResponseSpec ask(String query, Object conversationId, @Nullable Collection<Media> media) {
         return new ResponseSpec() {
             @Override
             public Flux<String> immediate() {
                 return chatClient.prompt()
-                        .user(query)
+                        .user(spec -> {
+                            spec.text(query);
+                            if (media != null && !media.isEmpty()) {
+                                spec.media(media.toArray(new Media[0]));
+                            }
+                        })
                         .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, conversationId))
                         .stream()
                         .content();

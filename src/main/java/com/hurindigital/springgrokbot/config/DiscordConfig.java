@@ -1,25 +1,20 @@
 package com.hurindigital.springgrokbot.config;
 
-import com.hurindigital.springgrokbot.discord.EventHandler;
-import com.hurindigital.springgrokbot.discord.ThreadAutoCloser;
-import com.hurindigital.springgrokbot.discord.function.Command;
-import com.hurindigital.springgrokbot.discord.function.CommandHandler;
-import com.hurindigital.springgrokbot.discord.function.ask.AskCommand;
-import com.hurindigital.springgrokbot.discord.function.ask.AskReplyHandler;
+import com.hurindigital.springgrokbot.discord.*;
+import com.hurindigital.springgrokbot.discord.command.ChatInteractionCommand;
+import com.hurindigital.springgrokbot.discord.command.MessageInteractionCommand;
+import com.hurindigital.springgrokbot.discord.command.ask.AskCommand;
+import com.hurindigital.springgrokbot.discord.command.ask.AskHurinCommand;
 import com.hurindigital.springgrokbot.repo.ThreadRepository;
-import com.hurindigital.springgrokbot.discord.BotRunner;
 import com.hurindigital.springgrokbot.service.ChatService;
 import com.hurindigital.springgrokbot.service.DiscordThreadTrackerService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.Event;
-import discord4j.rest.RestClient;
-import jakarta.annotation.PreDestroy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collection;
 import java.util.Set;
 
 @Configuration
@@ -47,13 +42,13 @@ public class DiscordConfig {
     }
 
     @Bean
-    AskReplyHandler askReplyHandler(ThreadTrackerService threadTrackerService, ChatService chatService) {
-        return new AskReplyHandler(threadTrackerService, chatService);
+    TrackedThreadReplyHandler askReplyHandler(ThreadTrackerService threadTrackerService, ChatService chatService) {
+        return new TrackedThreadReplyHandler(threadTrackerService, chatService);
     }
 
     @Bean
-    CommandHandler commandDispatcher(Collection<Command> commands) {
-        return new CommandHandler(commands);
+    CommandDispatcher commandDispatcher(Set<ChatInteractionCommand> chatInteractionCommands, Set<MessageInteractionCommand> messageInteractionCommands) {
+        return new CommandDispatcher(chatInteractionCommands, messageInteractionCommands);
     }
 
     @Bean
@@ -66,9 +61,9 @@ public class DiscordConfig {
         return new AskCommand(chatService, threadTrackerService);
     }
 
-    @PreDestroy
-    public void shutdown() {
-
+    @Bean
+    AskHurinCommand askHurinCommand(ThreadTrackerService threadTrackerService, ChatService chatService) {
+        return new AskHurinCommand(threadTrackerService, chatService);
     }
 
 }

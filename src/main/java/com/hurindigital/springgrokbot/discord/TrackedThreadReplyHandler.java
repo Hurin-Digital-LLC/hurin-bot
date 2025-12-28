@@ -1,13 +1,11 @@
-package com.hurindigital.springgrokbot.discord.function.ask;
+package com.hurindigital.springgrokbot.discord;
 
-import com.hurindigital.springgrokbot.discord.EventHandler;
 import com.hurindigital.springgrokbot.service.ChatService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.ThreadChannel;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -15,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Slf4j
-public class AskReplyHandler implements EventHandler<MessageCreateEvent> {
+public class TrackedThreadReplyHandler implements EventHandler<MessageCreateEvent> {
 
     private static final String TRIGGER = "!hurin";
 
@@ -23,7 +21,7 @@ public class AskReplyHandler implements EventHandler<MessageCreateEvent> {
 
     private final ChatService chatService;
 
-    public AskReplyHandler(ThreadTrackerService threadTrackerService, ChatService chatService) {
+    public TrackedThreadReplyHandler(ThreadTrackerService threadTrackerService, ChatService chatService) {
         this.threadTrackerService = threadTrackerService;
         this.chatService = chatService;
     }

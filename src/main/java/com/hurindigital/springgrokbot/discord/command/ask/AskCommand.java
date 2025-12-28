@@ -1,10 +1,8 @@
-package com.hurindigital.springgrokbot.discord.function.ask;
+package com.hurindigital.springgrokbot.discord.command.ask;
 
-import com.hurindigital.springgrokbot.discord.function.Command;
-import com.hurindigital.springgrokbot.domain.ThreadEntity;
+import com.hurindigital.springgrokbot.discord.command.ChatInteractionCommand;
 import com.hurindigital.springgrokbot.service.ChatService;
 import com.hurindigital.springgrokbot.service.ThreadTrackerService;
-import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -15,13 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Slf4j
-public class AskCommand implements Command {
+public class AskCommand implements ChatInteractionCommand {
 
     public static final String QUERY_OPTION = "query";
 

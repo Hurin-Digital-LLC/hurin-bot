@@ -1,7 +1,6 @@
 package com.hurindigital.springgrokbot.discord;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hurindigital.springgrokbot.config.DiscordConfig;
 import com.hurindigital.springgrokbot.config.DiscordProperties;
 import discord4j.common.JacksonResources;
 import discord4j.core.DiscordClient;
@@ -46,8 +45,8 @@ public class BotRunner implements ApplicationRunner {
                 .setEnabledIntents(IntentSet.nonPrivileged().or(IntentSet.of(Intent.MESSAGE_CONTENT)))
                 .setEventDispatcher(EventDispatcher.builder().build())
                 .login()
-                .flatMap(registerEventHandlers())
                 .flatMap(registerCommands())
+                .flatMap(registerEventHandlers())
                 .flatMap(GatewayDiscordClient::onDisconnect)
                 .doOnError(error -> log.error("Discord service error", error))
                 .subscribe();
@@ -60,6 +59,7 @@ public class BotRunner implements ApplicationRunner {
     }
 
     private <E extends Event> Mono<Void> register(GatewayDiscordClient gateway, EventHandler<E> handler) {
+        log.info("Registering event handler for {}", handler.getClass().getSimpleName());
         Class<E> type = handler.getEventType();
         return gateway.on(type)
                 .flatMap(handler::handle)
@@ -88,6 +88,7 @@ public class BotRunner implements ApplicationRunner {
                 .flatMapMany(Flux::fromArray)
                 .flatMap(resource -> Mono.fromCallable(resource::getInputStream)
                         .flatMap(this::loadResource)
+                        .doOnNext(command -> log.info("Loading command {}", command))
                         .onErrorResume(throwable -> {
                             log.error("Failed to load commands from resource", throwable);
                             return Mono.empty();
